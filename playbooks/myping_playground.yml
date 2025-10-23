@@ -1,0 +1,7 @@
+---
+- name: Test Ansible Playground
+  hosts: playground
+  tasks:
+    - name: Ping all hosts
+      ansible.builtin.ping:
+
