@@ -1,0 +1,22 @@
+version: "3.8"
+
+networks:
+  ansible-net:
+    external: true
+
+services:
+  ubuntu1:
+    image: ubuntu:22.04
+    container_name: ubuntu1
+    hostname: ubuntu1
+    networks:
+      - ansible-net
+    command: /bin/bash -c "apt update && apt install -y python3 openssh-server sudo && service ssh start && tail -f /dev/null"
+
+  ubuntu2:
+    image: ubuntu:22.04
+    container_name: ubuntu2
+    hostname: ubuntu2
+    networks:
+      - ansible-net
+    command: /bin/bash -c "apt update && apt install -y python3 openssh-server sudo && service ssh start && tail -f /dev/null"

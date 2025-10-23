@@ -13,7 +13,8 @@
     "/dev/fuse",
     "--security-opt",
     "apparmor=unconfined",
-    "--hostname=ansible-dev-container"
+    "--hostname=ansible-dev-container",
+    "--network=ansible-net"    // Connect to a user-defined network
   ],
   "updateRemoteUserUID": true,
   "customizations": {

@@ -18,7 +18,8 @@
     "--security-opt",
     "unmask=/sys/fs/cgroup",
     "--userns=host",
-    "--hostname=ansible-dev-container"
+    "--hostname=ansible-dev-container",
+    "--network=ansible-net"    // Connect to a user-defined network
   ],
   "customizations": {
     "vscode": {
