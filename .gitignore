@@ -1,0 +1,71 @@
+# Ansible specific
+*.retry
+*.log
+.ansible/
+*.cache
+.facts_cache/
+*.vault
+
+# Collections - only track requirements
+collections/*
+!collections/requirements.yml
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE specific
+.idea/
+.vscode/
+*.sublime-*
+*.swp
+*.swo
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Security / Private information
+vault.key
+vault.pass
+*vault.txt
+*.key
+*.pem
+*.crt
+*.cer
+.vault_pass.txt
+
+# Runtime data
+logs/
+*.pid
+*.sock
+
+# Test coverage
+.coverage
+coverage.xml
+htmlcov/
+.tox/
+.pytest_cache/
+
+# Molecule
+.molecule/
+*/.molecule/
+
+# Inventory backups
+inventory/*.bak
+inventory/*/*.bak
