@@ -17,15 +17,22 @@ All nodes are connected through a user-defined Docker network (`ansible-net`) fo
 
 ```mermaid
 graph LR
-  VSCode["IDE (VsCode"]
-  VSCode -- create --> Project["Ansible Project\n(repo/workspace)"]
-  Project -- requires --> DevContainer["Dev Container\n(enviroment)"]
-  DevContainer -- Use Network Bridge --> Ubuntu1["Ubuntu Server 1"]
-  DevContainer -- Use Network Bridge --> Ubuntu2["Ubuntu Server 2"]
-  classDef infra fill:#e6f7ff,stroke:#036,stroke-width:1px;
-  classDef host fill:#f7f7f7,stroke:#333,stroke-width:1px;
-  class VSCode,Project,DevContainer infra
-  class Bridge,Ubuntu1,Ubuntu2 host
+    subgraph DevContainer
+        VSCode[Ansible Project in VsCode]
+    end
+
+    subgraph Docker
+        Node1[Docker Node 1]
+        Node2[Docker Node 2]
+    end
+
+    subgraph Network["ansible-net"]
+        DevContainer
+        Nodes
+    end
+
+    VSCode --> Node1
+    VSCode --> Node2
 ```
 
 How it works:
