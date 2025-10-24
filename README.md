@@ -28,7 +28,7 @@ graph LR
 
     subgraph Network["ansible-net"]
         DevContainer
-        Nodes
+        Docker
     end
 
     VSCode --> Node1
