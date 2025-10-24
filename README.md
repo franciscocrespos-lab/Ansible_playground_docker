@@ -1,4 +1,4 @@
-# Ansible_Playground
+# Ansible Playground with Docker
 
 A playground environment for practicing and testing **Ansible** automation using Docker-based nodes. This setup allows you to experiment with Ansible playbooks, roles, custom modules, and network configurations in an isolated environment.
 
