@@ -1,0 +1,32 @@
+---
+# Java package mapping per OS
+java_package:
+  Debian: openjdk-21-jdk
+  RedHat: java-21-openjdk
+
+# Install Git? true/false
+install_git: true
+
+# Install curl/wget? true/false
+install_utils: true
+
+# Jenkins configuration defaults
+jenkins_num_executors: 2
+jenkins_mode: NORMAL
+disable_remember_me: true
+authorization_strategy_class: "hudson.security.FullControlOnceLoggedInAuthorizationStrategy"
+
+# Jenkins repositories - Debian
+jenkins_repo_deb_key_url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"
+jenkins_repo_deb: "deb https://pkg.jenkins.io/debian-stable binary/"
+
+# Jenkins repositories - RedHat
+jenkins_repo_rpm: "https://pkg.jenkins.io/redhat-stable"
+jenkins_repo_rpm_key_url: "https://pkg.jenkins.io/redhat-stable/jenkins.io-2023.key"
+
+# Optional deb822 variables (if you ever want to use deb822_repository)
+jenkins_deb822_repo_uri: "https://pkg.jenkins.io/debian-stable"
+jenkins_deb822_repo_codename: "stable"
+jenkins_deb822_repo_components:
+  - binary
+jenkins_deb822_key_url: "https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key"

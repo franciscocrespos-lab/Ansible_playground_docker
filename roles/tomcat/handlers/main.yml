@@ -1,0 +1,8 @@
+---
+- name: start tomcat
+  command: nohup tomcatup
+  args:
+     chdir: "{{ tomcat_home_path }}/bin/"
+
+- name: restart tomcat
+  command: tomcatdown; nohup tomcatup

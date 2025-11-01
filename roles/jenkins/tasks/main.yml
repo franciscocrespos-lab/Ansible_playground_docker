@@ -1,0 +1,123 @@
+---
+# Run preinstall before any apt tasks
+- import_tasks: preinstall.yml
+
+# 1.Update package cache
+- name: Update package cache - Debian/Ubuntu
+  apt:
+    update_cache: yes
+  when: ansible_os_family == "Debian"
+
+- name: Update package cache - RedHat/CentOS/Amazon
+  yum:
+    update_cache: yes
+  when: ansible_os_family == "RedHat"
+
+# 2. Install Package required
+# Install Java according by OS, setup on the defaults
+- name: Install Java 
+  apt:
+    name: "{{ java_package[ansible_os_family] }}"
+    state: present
+
+# Install Git
+- name: Install Git
+  apt:
+    name: git
+    state: present
+  when: install_git
+
+# Install curl and wget
+- name: Install curl and wget
+  package:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - curl
+    - wget
+  when: install_utils
+
+# 3. Add Jenkins Repository and GPG Key
+# -- Debian / Ubuntu ------------------------------------
+- block:
+    # Ensure gnupg exists in case we fall back to apt_key
+    - name: Ensure gnupg is installed (required for apt_key)
+      apt:
+        name: gnupg
+        state: present
+
+    # Try modern deb822_repository if available
+    - name: Add Jenkins repository (modern way)
+      ansible.builtin.deb822_repository:
+        name: jenkins
+        types: [deb]
+        uris: "{{ jenkins_deb822_repo }}"
+        suites: [binary/]
+        components: [main]
+        signed_by: "{{ jenkins_deb822_key_url  }}"
+        state: present
+      register: deb822_result
+      ignore_errors: true  # fallback gracefully if module not supported
+
+    # Fallback to classic apt_key + apt_repository
+    - name: Add Jenkins repo key (fallback)
+      apt_key:
+        url: "{{ jenkins_repo_deb_key_url  }}"
+        state: present
+      when: deb822_result is failed
+
+    - name: Add Jenkins repo (fallback)
+      apt_repository:
+        repo: "{{ jenkins_repo_deb }}"
+        state: present
+      when: deb822_result is failed
+
+  when: ansible_os_family == "Debian"
+
+# -- RedHat / CentOS / Amazon Linux ----------------------
+- name: Add Jenkins repo - RedHat/CentOS/Amazon
+  yum_repository:
+    name: jenkins
+    description: Jenkins repo
+    baseurl: "{{ jenkins_repo_rpm }}"
+    gpgcheck: yes
+    gpgkey: "{{ jenkins_repo_rpm_key_url }}"
+    state: present
+  when: ansible_os_family == "RedHat"
+
+# 4 Install Jenkins package
+- name: Install Jenkins
+  package:
+    name: jenkins
+    state: present
+
+# 5. Deploy Jenkins Config using template
+- name: Deploy Jenkins config
+  template:
+    src: config.xml.j2
+    dest: /var/lib/jenkins/config.xml
+    owner: jenkins
+    group: jenkins
+    mode: 0644
+  notify: Restart Jenkins
+
+#6. Start and enable Jenkins service:
+- name: Ensure Jenkins is running
+  service:
+    name: jenkins
+    state: started
+    enabled: yes
+
+#- name: Wait until initialAdminPassword exists
+#  wait_for:
+#    path: /var/lib/jenkins/secrets/initialAdminPassword
+#    state: present
+#    timeout: 120 
+
+#- name: Read and print the password
+#  command: cat /var/lib/jenkins/secrets/initialAdminPassword
+#  register: jenkins_password
+
+#- name: Display the password
+#  debug:
+#    msg: "{{ jenkins_password.stdout }}"

@@ -1,0 +1,81 @@
+---
+# This is the entry point for the role
+
+- name: Run preinstall tasks
+  include_tasks: ../roles/tomcat/tasks/preinstall.yml
+
+# Starting to Install Tomcat
+
+- name: downloading tomcat packages
+  get_url:
+    url: "{{ tomcat_url_tar_gz}}"
+    dest: /opt
+    mode: 0755
+
+- name: extract package
+  unarchive:
+    src: /opt/{{tomcat_version}}.tar.gz
+    dest: /opt
+    remote_src: yes
+
+- name: change permission on apache-tomcat directory
+  file:
+    path: /opt/{{ tomcat_version }}
+    mode: 0755
+    recurse: yes
+
+- name: create link file for tomcat installation
+  file:
+    src: /opt/{{ tomcat_version }}
+    dest: "{{ tomcat_home_path }}"
+    state: link
+
+## FOR CHANGING A PORT IF needed
+# - name: change port number
+#   lineinfile:
+#     path: "{{ tomcat_home_path }}/conf/server.xml"
+#     regexp: "^<Connector port="
+#     line: <Connector port="8088" protocol="HTTP/1.1"
+
+#- name: Comment out RemoteCIDRValve
+#  replace:
+#    path: "{{ tomcat_config_file }}"
+#    regexp: '^\s*<Valve className="org\.apache\.catalina\.valves\.RemoteCIDRValve".*\/>\s*$'
+#    replace: '    <!-- \g<0> -->'
+#  loop: "{{ context_files }}"
+#  when: comment_valve
+
+- name: Fix users for Tomcat
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: root
+    group: root
+    mode: '0755'
+    backup: yes
+  loop: "{{ config_files }}"
+
+
+- name: create link file for tomcat startup.sh
+  file:
+    src: "{{ tomcat_home_path }}/bin/{{ item.tomcat_script }}"
+    dest: /usr/local/bin/{{ item.tomcat_comand }}
+    state: link
+  loop:
+    - { tomcat_script: 'startup.sh', tomcat_comand: tomcatup }
+    - { tomcat_script: 'shutdown.sh', tomcat_comand: tomcatdown }
+
+- name: deploy war file
+  copy:
+    src: "{{ artifactory_path }}/{{ item.app }}"
+    dest: "{{ tomcat_home_path }}/webapps/{{ item.app }}"
+  loop: "{{ artifactories }}"
+  notify: restart tomcat
+
+
+
+
+
+
+
+  notify: start tomcat

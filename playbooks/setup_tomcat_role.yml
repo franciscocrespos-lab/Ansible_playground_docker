@@ -1,0 +1,7 @@
+---
+- name: setup tomcat
+  hosts: tomcat_servers
+  become: true
+
+  roles:
+    - tomcat

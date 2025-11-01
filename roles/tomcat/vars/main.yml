@@ -1,0 +1,20 @@
+---
+tomcat_home_path: "/opt/apache-tomcat"
+tomcat_url_tar_gz: "https://dlcdn.apache.org/tomcat/tomcat-10/v10.1.48/bin/apache-tomcat-10.1.48.tar.gz"
+tomcat_version: "apache-tomcat-10.1.48"
+
+# Comment valve to allow in a test environment to access tomcat from any place.
+comment_valve: true
+
+# List of files that need to be updates with the valve:
+config_files:
+  - { src: "docs_context.xml" , dest: "{{ tomcat_home_path }}/webapps/docs/META-INF/context.xml" }
+  - { src: "examples_context.xml" , dest: "{{ tomcat_home_path }}/webapps/examples/META-INF/context.xml" }
+  - { src: "manager_context.xml" , dest: "{{ tomcat_home_path }}/webapps/manager/META-INF/context.xml" }
+  - { src: "host-manager_context.xml" , dest: "{{ tomcat_home_path }}/webapps/host-manager/META-INF/context.xml" }
+  - { src: "tomcat-users.xml" , dest: "{{ tomcat_home_path }}/conf/tomcat-users.xml" }
+
+# Artifactory path:
+artifactory_path: "/home/ansible/workspace/artifacts"
+artifactories:
+  - { app: "merry.war" }

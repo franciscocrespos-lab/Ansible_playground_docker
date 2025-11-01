@@ -1,0 +1,30 @@
+---
+# Bootstrap Python APT dependencies on Debian-based hosts
+
+# 1. Remove broken Jenkins .sources file if it exists
+- name: Remove broken Jenkins .sources file if it exists
+  file:
+    path: /etc/apt/sources.list.d/jenkins.sources
+    state: absent
+  become: yes
+  when: ansible_facts['os_family'] == 'Debian'
+
+# 2. Install python3-apt and python3-debian (raw, works even if APT cache is empty)
+- name: Ensure python3-apt and python3-debian are installed (bootstrap)
+  raw: |
+    if ! dpkg -s python3-apt >/dev/null 2>&1 || ! dpkg -s python3-debian >/dev/null 2>&1; then
+      apt-get update && apt-get install -y python3-apt python3-debian
+    fi
+  changed_when: false
+  when: ansible_facts['os_family'] == 'Debian'
+
+# 3. Confirm python3-apt and python3-debian are installed (normal apt module)
+- name: Confirm python3-apt and python3-debian are installed
+  become: yes
+  apt:
+    name:
+      - python3-apt
+      - python3-debian
+    state: present
+    update_cache: yes
+  when: ansible_facts['os_family'] == 'Debian'

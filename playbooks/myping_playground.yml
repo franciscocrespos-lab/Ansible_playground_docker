@@ -1,6 +1,6 @@
 ---
 - name: Test Ansible Playground
-  hosts: playground
+  hosts: all
   tasks:
     - name: Ping all hosts
       ansible.builtin.ping:
